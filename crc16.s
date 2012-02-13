@@ -11,6 +11,11 @@
 len:     .word   9
 string:  .ascii  "123456789"
 
+PrintfFormat:	.asciiz 	"CRC16 = %x\n\n"
+		.align		2
+PrintfPar:	.word		PrintfFormat
+PrintfValue:	.space		8
+
 .text
 
 .global main
@@ -59,4 +64,8 @@ done:
 
 ANDI R5, R1, #0xFFFF
 
-trap 0
+SW		  PrintfValue, R5
+ADDI	R14,R0,PrintfPar
+trap		5
+
+trap    0
