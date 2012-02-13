@@ -8,22 +8,32 @@
 
 .data
 
-len:     .word   9
-string:  .ascii  "123456789"
+Prompt:       .asciiz  "Len: "
+PrintfFormat: .asciiz  "CRC16 = %x\n\n"
+              .align   2
+PrintfPar:    .word    PrintfFormat
+PrintfValue:  .space   8
 
-PrintfFormat:	.asciiz 	"CRC16 = %x\n\n"
-		.align		2
-PrintfPar:	.word		PrintfFormat
-PrintfValue:	.space		8
+string:       .space 64
+par1:         .word 0
 
-.text
+.word string
+.word 64
 
 .global main
 
+.text
+
 main:
 
+ADDI R1,R0,Prompt  ;
+JAL  InputUnsigned ; length input
+ADD  R2, R0, R1    ;
+
+ADDI R14, R0, par1 ; sequence input
+trap 3             ;
+
 ADDU R1, R0, #0xFFFF    ; crc init
-LW   R2, len            ; str length
 ADDI R3, R0, string     ; pointer to first byte
 
 ;============main loop===============
@@ -64,8 +74,8 @@ done:
 
 ANDI R5, R1, #0xFFFF
 
-SW		  PrintfValue, R5
-ADDI	R14,R0,PrintfPar
-trap		5
+SW    PrintfValue, R5   ;
+ADDI  R14,R0,PrintfPar  ; output
+trap  5                 ;
 
-trap    0
+trap  0
